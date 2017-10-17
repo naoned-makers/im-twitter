@@ -1,5 +1,7 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import TwitterAPI from "twitter";
-var mqtt = require('mqtt');
+import mqtt from 'mqtt';
 
 let client = new TwitterAPI({
   "consumer_key": process.env.TWITTER_CONSUMER_KEY,
@@ -9,26 +11,26 @@ let client = new TwitterAPI({
 });
 
 console.log("Création du client Twitter...");
-let stream = client.stream('statuses/filter', {track: '#balancetonporc'});
+let stream = client.stream('statuses/filter', { track: `${process.env.TWITTER_TRACK}` });
 
-stream.on('data', function(tweetReceived) {
+stream.on('data', function (tweetReceived) {
   console.log("On a reçu un tweet");
-  let payload = JSON.stringify({'user_name': tweetReceived.user.user_name, 'screen_name': tweetReceived.user.screen_name, 'text': tweetReceived.text});
+  let payload = JSON.stringify({ 'user_name': tweetReceived.user.name, 'screen_name': tweetReceived.user.screen_name, 'text': tweetReceived.text, 'created_at': tweetReceived.created_at });
   console.log("Payload : ");
   console.log(payload);
   clientMQTT.publish('im/command/twitter', payload);
 });
 
-stream.on('error', function(error) {
+stream.on('error', function (error) {
   throw error;
 });
 
 
-let clientMQTT = mqtt.connect('ws://192.168.1.119:3000', { clientId: 'twitter_'+Math.random().toString(16).substr(2, 8)})
- 
+const clientMQTT = mqtt.connect(`ws://${process.env.MQTT_HOST}:${process.env.MQTT_PORT}`, { clientId: 'twitter_' + Math.random().toString(16).substr(2, 8) })
+
 clientMQTT.on('connect', function () {
   clientMQTT.subscribe('im/command/twitter');
 })
- 
+
 
 
