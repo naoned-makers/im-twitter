@@ -12,7 +12,8 @@ TWITTER_CONSUMER_SECRET
 TWITTER_ACCESS_TOKEN_KEY
 TWITTER_ACCESS_TOKEN_SECRET
 
-# Hashtag twitter à suivre
+# Comma-separated list of phrases which will be used to determine what Tweets will be delivered on the stream
+# Refer to https://developer.twitter.com/en/docs/tweets/filter-realtime/guides/basic-stream-parameters
 TWITTER_TRACK
 
 # Hostname et port de connexion MQTT
